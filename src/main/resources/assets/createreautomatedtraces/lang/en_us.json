@@ -1,0 +1,13 @@
+{
+  "itemGroup.createreautomatedtraces": "Example Mod Tab",
+  "block.createreautomatedtraces.example_block": "Example Block",
+  "item.createreautomatedtraces.example_item": "Example Item",
+
+  "createreautomatedtraces.configuration.title": "Create ReAutomated: Traces Configs",
+  "createreautomatedtraces.configuration.section.createreautomatedtraces.common.toml": "Create ReAutomated: Traces Configs",
+  "createreautomatedtraces.configuration.section.createreautomatedtraces.common.toml.title": "Create ReAutomated: Traces Configs",
+  "createreautomatedtraces.configuration.items": "Item List",
+  "createreautomatedtraces.configuration.logDirtBlock": "Log Dirt Block",
+  "createreautomatedtraces.configuration.magicNumberIntroduction": "Magic Number Text",
+  "createreautomatedtraces.configuration.magicNumber": "Magic Number"
+}
