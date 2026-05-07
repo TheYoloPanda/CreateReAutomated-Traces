@@ -88,6 +88,25 @@ Add an Ores indicator where a Node has been generated
     ordering="NONE"
     side="BOTH"
 
+# Create ReAutomated — hard dependency. This add-on listens for nodes generated
+# by Create ReAutomated's worldgen and places a surface trace structure above them.
+[[dependencies.${mod_id}]]
+    modId="createreautomated"
+    type="required"
+    versionRange="[0.1.1,)"
+    ordering="AFTER"
+    side="BOTH"
+
+# Create — optional. Required only if zinc_node / deepslate_zinc_node should
+# surface as create:zinc_ore. Without Create installed those nodes are skipped
+# silently, all other ore nodes still work.
+[[dependencies.${mod_id}]]
+    modId="create"
+    type="optional"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.
