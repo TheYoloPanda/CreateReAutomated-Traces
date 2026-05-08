@@ -4,7 +4,8 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.typ.traces.event.ChunkLoadHandler;
-import com.typ.traces.worldgen.OrePlaceholderProcessor;
+import com.typ.traces.worldgen.TracePlaceholderProcessor;
+import com.typ.traces.worldgen.TraceTemplates;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -17,7 +18,8 @@ public class CreateReAutomatedTraces {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CreateReAutomatedTraces(IEventBus modEventBus, ModContainer modContainer) {
-        modEventBus.addListener(OrePlaceholderProcessor::onRegister);
+        modEventBus.addListener(TracePlaceholderProcessor::onRegister);
+        NeoForge.EVENT_BUS.addListener(TraceTemplates::onAddReloadListener);
         NeoForge.EVENT_BUS.register(new ChunkLoadHandler());
     }
 }
