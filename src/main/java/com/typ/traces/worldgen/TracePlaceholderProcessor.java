@@ -3,12 +3,14 @@ package com.typ.traces.worldgen;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.typ.traces.CreateReAutomatedTraces;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,18 +20,22 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-public class OrePlaceholderProcessor extends StructureProcessor {
+public class TracePlaceholderProcessor extends StructureProcessor {
 
-    public static final MapCodec<OrePlaceholderProcessor> CODEC =
-            BuiltInRegistries.BLOCK.byNameCodec().fieldOf("target")
-                    .xmap(OrePlaceholderProcessor::new, p -> p.target);
+    public static final MapCodec<TracePlaceholderProcessor> CODEC = RecordCodecBuilder.mapCodec(inst ->
+            inst.group(
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("ore").forGetter(p -> p.ore),
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("host").forGetter(p -> p.host)
+            ).apply(inst, TracePlaceholderProcessor::new));
 
-    public static final StructureProcessorType<OrePlaceholderProcessor> TYPE = () -> CODEC;
+    public static final StructureProcessorType<TracePlaceholderProcessor> TYPE = () -> CODEC;
 
-    private final Block target;
+    private final Block ore;
+    private final Block host;
 
-    public OrePlaceholderProcessor(Block target) {
-        this.target = target;
+    public TracePlaceholderProcessor(Block ore, Block host) {
+        this.ore = ore;
+        this.host = host;
     }
 
     @Nullable
@@ -43,9 +49,15 @@ public class OrePlaceholderProcessor extends StructureProcessor {
             StructurePlaceSettings settings) {
         if (currentBlockInfo.state().is(Blocks.WHITE_CONCRETE)) {
             return new StructureTemplate.StructureBlockInfo(
-                    currentBlockInfo.pos(),
-                    target.defaultBlockState(),
-                    currentBlockInfo.nbt());
+                    currentBlockInfo.pos(), host.defaultBlockState(), currentBlockInfo.nbt());
+        }
+        if (currentBlockInfo.state().is(Blocks.BLACK_CONCRETE)) {
+            return new StructureTemplate.StructureBlockInfo(
+                    currentBlockInfo.pos(), ore.defaultBlockState(), currentBlockInfo.nbt());
+        }
+        if (currentBlockInfo.state().isAir()
+                && level.getFluidState(currentBlockInfo.pos()).is(FluidTags.WATER)) {
+            return null;
         }
         return currentBlockInfo;
     }
@@ -58,7 +70,7 @@ public class OrePlaceholderProcessor extends StructureProcessor {
     public static void onRegister(RegisterEvent event) {
         event.register(Registries.STRUCTURE_PROCESSOR, helper ->
                 helper.register(
-                        ResourceLocation.fromNamespaceAndPath(CreateReAutomatedTraces.MODID, "ore_placeholder"),
+                        ResourceLocation.fromNamespaceAndPath(CreateReAutomatedTraces.MODID, "trace_placeholder"),
                         TYPE));
     }
 }
