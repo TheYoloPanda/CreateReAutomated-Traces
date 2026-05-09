@@ -33,12 +33,12 @@ public final class TraceStructurePlacer {
     }
 
     public static void place(ServerLevel level, BlockPos nodePos, Block nodeBlock, ResourceLocation nodeId, RandomSource rng) {
-        Optional<Block> oreOpt = OreForNodeDataMap.oreFor(nodeBlock);
-        if (oreOpt.isEmpty()) {
-            OreForNodeDataMap.warnMissingOnce(nodeId);
+        Optional<Block> traceBlockOpt = TraceBlockDataMap.traceBlockFor(nodeBlock);
+        if (traceBlockOpt.isEmpty()) {
+            TraceBlockDataMap.warnMissingOnce(nodeId);
             return;
         }
-        Block ore = oreOpt.get();
+        Block traceBlock = traceBlockOpt.get();
         Block host = (nodeBlock instanceof OreNodeBlock onb)
                 ? smoothify(onb.baseRock.getBlock())
                 : Blocks.STONE;
@@ -67,7 +67,7 @@ public final class TraceStructurePlacer {
         clearFoliage(level, anchor, size);
 
         StructurePlaceSettings settings = new StructurePlaceSettings()
-                .addProcessor(new TracePlaceholderProcessor(ore, host));
+                .addProcessor(new TracePlaceholderProcessor(traceBlock, host));
 
         boolean placed = tmpl.placeInWorld(level, anchor, anchor, settings, rng, PLACE_FLAGS);
         if (!placed) return;

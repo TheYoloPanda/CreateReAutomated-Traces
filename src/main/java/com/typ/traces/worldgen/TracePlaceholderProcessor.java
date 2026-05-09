@@ -24,17 +24,17 @@ public class TracePlaceholderProcessor extends StructureProcessor {
 
     public static final MapCodec<TracePlaceholderProcessor> CODEC = RecordCodecBuilder.mapCodec(inst ->
             inst.group(
-                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("ore").forGetter(p -> p.ore),
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("trace_block").forGetter(p -> p.traceBlock),
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("host").forGetter(p -> p.host)
             ).apply(inst, TracePlaceholderProcessor::new));
 
     public static final StructureProcessorType<TracePlaceholderProcessor> TYPE = () -> CODEC;
 
-    private final Block ore;
+    private final Block traceBlock;
     private final Block host;
 
-    public TracePlaceholderProcessor(Block ore, Block host) {
-        this.ore = ore;
+    public TracePlaceholderProcessor(Block traceBlock, Block host) {
+        this.traceBlock = traceBlock;
         this.host = host;
     }
 
@@ -53,7 +53,7 @@ public class TracePlaceholderProcessor extends StructureProcessor {
         }
         if (currentBlockInfo.state().is(Blocks.BLACK_CONCRETE)) {
             return new StructureTemplate.StructureBlockInfo(
-                    currentBlockInfo.pos(), ore.defaultBlockState(), currentBlockInfo.nbt());
+                    currentBlockInfo.pos(), traceBlock.defaultBlockState(), currentBlockInfo.nbt());
         }
         if (currentBlockInfo.state().isAir()
                 && level.getFluidState(currentBlockInfo.pos()).is(FluidTags.WATER)) {
