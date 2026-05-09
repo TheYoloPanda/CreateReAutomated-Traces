@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.typ.traces.event.ChunkLoadHandler;
+import com.typ.traces.worldgen.OreForNodeDataMap;
 import com.typ.traces.worldgen.TracePlaceholderProcessor;
 import com.typ.traces.worldgen.TraceTemplates;
 
@@ -19,6 +20,7 @@ public class CreateReAutomatedTraces {
 
     public CreateReAutomatedTraces(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(TracePlaceholderProcessor::onRegister);
+        modEventBus.addListener(OreForNodeDataMap::register);
         NeoForge.EVENT_BUS.addListener(TraceTemplates::onAddReloadListener);
         NeoForge.EVENT_BUS.register(new ChunkLoadHandler());
     }

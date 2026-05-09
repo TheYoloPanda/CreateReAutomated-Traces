@@ -2,6 +2,7 @@ package com.typ.traces.worldgen;
 
 import java.util.Optional;
 
+import com.github.zgraund.createreautomated.block.node.OreNodeBlock;
 import com.typ.traces.CreateReAutomatedTraces;
 
 import net.minecraft.core.BlockPos;
@@ -25,11 +26,22 @@ public final class TraceStructurePlacer {
 
     private TraceStructurePlacer() {}
 
-    public static void place(ServerLevel level, BlockPos nodePos, ResourceLocation nodeId, RandomSource rng) {
-        Optional<Block> oreOpt = NodeOreMapping.oreFor(nodeId);
-        if (oreOpt.isEmpty()) return;
-        Optional<Block> hostOpt = NodeHostMapping.hostFor(nodeId);
-        if (hostOpt.isEmpty()) return;
+    private static Block smoothify(Block raw) {
+        if (raw == Blocks.COBBLESTONE) return Blocks.STONE;
+        if (raw == Blocks.COBBLED_DEEPSLATE) return Blocks.DEEPSLATE;
+        return raw;
+    }
+
+    public static void place(ServerLevel level, BlockPos nodePos, Block nodeBlock, ResourceLocation nodeId, RandomSource rng) {
+        Optional<Block> oreOpt = OreForNodeDataMap.oreFor(nodeBlock);
+        if (oreOpt.isEmpty()) {
+            OreForNodeDataMap.warnMissingOnce(nodeId);
+            return;
+        }
+        Block ore = oreOpt.get();
+        Block host = (nodeBlock instanceof OreNodeBlock onb)
+                ? smoothify(onb.baseRock.getBlock())
+                : Blocks.STONE;
 
         Optional<ResourceLocation> tmplIdOpt = TraceTemplates.pick(rng);
         if (tmplIdOpt.isEmpty()) return;
@@ -52,12 +64,10 @@ public final class TraceStructurePlacer {
         if (!level.hasChunkAt(anchor) || !level.hasChunkAt(farCorner)) return;
         if (anchor.getY() + size.getY() >= level.getMaxBuildHeight()) return;
 
-        Block host = hostOpt.get();
-
         clearFoliage(level, anchor, size);
 
         StructurePlaceSettings settings = new StructurePlaceSettings()
-                .addProcessor(new TracePlaceholderProcessor(oreOpt.get(), host));
+                .addProcessor(new TracePlaceholderProcessor(ore, host));
 
         boolean placed = tmpl.placeInWorld(level, anchor, anchor, settings, rng, PLACE_FLAGS);
         if (!placed) return;
