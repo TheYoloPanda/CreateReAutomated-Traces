@@ -123,9 +123,10 @@ configurations {
 }
 
 dependencies {
-    // Create ReAutomated — required hard dependency. We do not import any of its
-    // classes directly; node detection happens via the createreautomated:ore_nodes
-    // block tag and ResourceLocation lookups, but it must be present at runtime.
+    // Create ReAutomated — required hard dependency. Node detection uses the
+    // createreautomated:ore_nodes block tag; node→ore mapping is data-driven via
+    // a NeoForge Data Map; host stone is read from OreNodeBlock.baseRock (direct
+    // import — safe because CRA is required at runtime).
     implementation "maven.modrinth:create-reautomated:${createreautomated_version}"
 
     // Create — optional. Only needed at dev-runtime to test that zinc_node

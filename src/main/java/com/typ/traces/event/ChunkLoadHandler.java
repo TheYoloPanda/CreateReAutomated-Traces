@@ -47,7 +47,7 @@ public class ChunkLoadHandler {
             if (!level.hasChunk(cp.x, cp.z)) return;
             RandomSource rng = RandomSource.create(deterministicSeed);
             for (NodeMatch m : matches) {
-                TraceStructurePlacer.place(level, m.pos, m.id, rng);
+                TraceStructurePlacer.place(level, m.pos, m.block, m.id, rng);
             }
         }));
     }
@@ -68,9 +68,10 @@ public class ChunkLoadHandler {
                     for (int dz = 0; dz < 16; dz++) {
                         BlockState state = section.getBlockState(dx, dy, dz);
                         if (!state.is(ORE_NODES)) continue;
-                        ResourceLocation nodeId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                        Block block = state.getBlock();
+                        ResourceLocation nodeId = BuiltInRegistries.BLOCK.getKey(block);
                         BlockPos pos = new BlockPos(cp.getMinBlockX() + dx, yBase + dy, cp.getMinBlockZ() + dz);
-                        result.add(new NodeMatch(pos, nodeId));
+                        result.add(new NodeMatch(pos, block, nodeId));
                     }
                 }
             }
@@ -78,5 +79,5 @@ public class ChunkLoadHandler {
         return result;
     }
 
-    private record NodeMatch(BlockPos pos, ResourceLocation id) {}
+    private record NodeMatch(BlockPos pos, Block block, ResourceLocation id) {}
 }
