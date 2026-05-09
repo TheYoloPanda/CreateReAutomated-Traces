@@ -1,0 +1,15 @@
+{
+  "values": {
+    "createreautomated:copper_node":            { "trace_block": "minecraft:copper_ore" },
+    "createreautomated:zinc_node":              { "trace_block": "create:zinc_ore" },
+    "createreautomated:iron_node":              { "trace_block": "minecraft:iron_ore" },
+    "createreautomated:gold_node":              { "trace_block": "minecraft:gold_ore" },
+    "createreautomated:diamond_node":           { "trace_block": "minecraft:diamond_ore" },
+    "createreautomated:deepslate_copper_node":  { "trace_block": "minecraft:deepslate_copper_ore" },
+    "createreautomated:deepslate_zinc_node":    { "trace_block": "create:deepslate_zinc_ore" },
+    "createreautomated:deepslate_iron_node":    { "trace_block": "minecraft:deepslate_iron_ore" },
+    "createreautomated:deepslate_gold_node":    { "trace_block": "minecraft:deepslate_gold_ore" },
+    "createreautomated:deepslate_diamond_node": { "trace_block": "minecraft:deepslate_diamond_ore" },
+    "createreautomated:nether_gold_node":       { "trace_block": "minecraft:nether_gold_ore" }
+  }
+}
