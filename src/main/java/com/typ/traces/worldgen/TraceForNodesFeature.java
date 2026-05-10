@@ -1,55 +1,53 @@
-package com.typ.traces.event;
+package com.typ.traces.worldgen;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.typ.traces.worldgen.TraceStructurePlacer;
+import com.mojang.serialization.Codec;
+import com.typ.traces.CreateReAutomatedTraces;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.TickTask;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
-public class ChunkLoadHandler {
+public class TraceForNodesFeature extends Feature<NoneFeatureConfiguration> {
 
     private static final TagKey<Block> ORE_NODES = TagKey.create(
             Registries.BLOCK,
             ResourceLocation.fromNamespaceAndPath("createreautomated", "ore_nodes"));
 
-    @SubscribeEvent
-    public void onChunkLoad(ChunkEvent.Load event) {
-        if (!event.isNewChunk()) return;
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
+    public TraceForNodesFeature(Codec<NoneFeatureConfiguration> codec) {
+        super(codec);
+    }
 
-        ChunkAccess chunk = event.getChunk();
+    @Override
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
+        WorldGenLevel level = ctx.level();
+        BlockPos origin = ctx.origin();
+        ChunkAccess chunk = level.getChunk(origin);
         ChunkPos cp = chunk.getPos();
 
         List<NodeMatch> matches = scanChunkForNodes(chunk, cp);
-        if (matches.isEmpty()) return;
+        if (matches.isEmpty()) return false;
 
-        long deterministicSeed = cp.toLong() ^ level.getSeed();
-        MinecraftServer server = level.getServer();
-        if (server == null) return;
-
-        server.tell(new TickTask(server.getTickCount() + 1, () -> {
-            if (!level.hasChunk(cp.x, cp.z)) return;
-            RandomSource rng = RandomSource.create(deterministicSeed);
-            for (NodeMatch m : matches) {
-                TraceStructurePlacer.place(level, m.pos, m.block, m.id, rng);
-            }
-        }));
+        boolean placedAny = false;
+        for (NodeMatch m : matches) {
+            TraceStructurePlacer.place(level, m.pos, m.block, m.id, ctx.random());
+            placedAny = true;
+        }
+        return placedAny;
     }
 
     private static List<NodeMatch> scanChunkForNodes(ChunkAccess chunk, ChunkPos cp) {
@@ -80,4 +78,11 @@ public class ChunkLoadHandler {
     }
 
     private record NodeMatch(BlockPos pos, Block block, ResourceLocation id) {}
+
+    public static void onRegister(RegisterEvent event) {
+        event.register(Registries.FEATURE, helper ->
+                helper.register(
+                        ResourceLocation.fromNamespaceAndPath(CreateReAutomatedTraces.MODID, "trace_for_nodes"),
+                        new TraceForNodesFeature(NoneFeatureConfiguration.CODEC)));
+    }
 }
