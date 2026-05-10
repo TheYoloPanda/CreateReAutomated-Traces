@@ -1,0 +1,6 @@
+{
+  "feature": "createreautomatedtraces:trace_for_nodes",
+  "placement": [
+    { "type": "minecraft:count", "count": 1 }
+  ]
+}
