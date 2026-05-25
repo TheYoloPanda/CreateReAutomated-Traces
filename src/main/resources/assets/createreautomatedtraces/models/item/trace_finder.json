@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "createreautomatedtraces:item/trace_finder/trace_finder_16"
+  },
+  "overrides": [
+    {"predicate": {"createreautomatedtraces:target": 0.000000}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_16"},
+    {"predicate": {"createreautomatedtraces:target": 0.015625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_17"},
+    {"predicate": {"createreautomatedtraces:target": 0.046875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_18"},
+    {"predicate": {"createreautomatedtraces:target": 0.078125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_19"},
+    {"predicate": {"createreautomatedtraces:target": 0.109375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_20"},
+    {"predicate": {"createreautomatedtraces:target": 0.140625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_21"},
+    {"predicate": {"createreautomatedtraces:target": 0.171875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_22"},
+    {"predicate": {"createreautomatedtraces:target": 0.203125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_23"},
+    {"predicate": {"createreautomatedtraces:target": 0.234375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_24"},
+    {"predicate": {"createreautomatedtraces:target": 0.265625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_25"},
+    {"predicate": {"createreautomatedtraces:target": 0.296875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_26"},
+    {"predicate": {"createreautomatedtraces:target": 0.328125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_27"},
+    {"predicate": {"createreautomatedtraces:target": 0.359375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_28"},
+    {"predicate": {"createreautomatedtraces:target": 0.390625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_29"},
+    {"predicate": {"createreautomatedtraces:target": 0.421875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_30"},
+    {"predicate": {"createreautomatedtraces:target": 0.453125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_31"},
+    {"predicate": {"createreautomatedtraces:target": 0.484375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_00"},
+    {"predicate": {"createreautomatedtraces:target": 0.515625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_01"},
+    {"predicate": {"createreautomatedtraces:target": 0.546875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_02"},
+    {"predicate": {"createreautomatedtraces:target": 0.578125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_03"},
+    {"predicate": {"createreautomatedtraces:target": 0.609375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_04"},
+    {"predicate": {"createreautomatedtraces:target": 0.640625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_05"},
+    {"predicate": {"createreautomatedtraces:target": 0.671875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_06"},
+    {"predicate": {"createreautomatedtraces:target": 0.703125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_07"},
+    {"predicate": {"createreautomatedtraces:target": 0.734375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_08"},
+    {"predicate": {"createreautomatedtraces:target": 0.765625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_09"},
+    {"predicate": {"createreautomatedtraces:target": 0.796875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_10"},
+    {"predicate": {"createreautomatedtraces:target": 0.828125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_11"},
+    {"predicate": {"createreautomatedtraces:target": 0.859375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_12"},
+    {"predicate": {"createreautomatedtraces:target": 0.890625}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_13"},
+    {"predicate": {"createreautomatedtraces:target": 0.921875}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_14"},
+    {"predicate": {"createreautomatedtraces:target": 0.953125}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_15"},
+    {"predicate": {"createreautomatedtraces:target": 0.984375}, "model": "createreautomatedtraces:item/trace_finder/trace_finder_16"}
+  ]
+}

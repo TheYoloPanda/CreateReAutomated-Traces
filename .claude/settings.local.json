@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo *)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api *)",
+      "PowerShell(gh api *)",
+      "PowerShell($r = Invoke-RestMethod -Uri \"https://api.github.com/repos/zGraund/CreateReAutomated/releases\" -Headers @{\"User-Agent\"=\"claude-code\"}; $r | Select-Object -First 6 | ForEach-Object { [PSCustomObject]@{ tag = $_.tag_name; name = $_.name; date = $_.published_at; assets = \\($_.assets | ForEach-Object { $_.name }\\) -join ', ' } } | Format-Table -AutoSize -Wrap)",
+      "PowerShell(try { $r = Invoke-RestMethod -Uri \"https://api.modrinth.com/v2/project/create-reautomated/version\" -Headers @{\"User-Agent\"=\"claude-code \\(research\\)\"}; $r | Where-Object { $_.game_versions -contains \"1.21.1\" } | Select-Object -First 5 | ForEach-Object { [PSCustomObject]@{ version_number = $_.version_number; loaders = \\($_.loaders -join ','\\); date = $_.date_published; files = \\($_.files | ForEach-Object { $_.filename }\\) -join '; ' } } | Format-List } catch { \"Modrinth slug 'create-reautomated' not found: \" + $_.Exception.Message })",
+      "Bash(./gradlew.bat compileJava --no-daemon)",
+      "Bash(./gradlew.bat assemble *)",
+      "Bash(git *)",
+      "Bash(Get-ChildItem -Force)",
+      "Bash(Select-Object Name)",
+      "Bash(unzip *)",
+      "Bash(./gradlew compileJava)",
+      "WebFetch(domain:docs.neoforged.net)",
+      "Read(//tmp/**)",
+      "Bash(javap -p com/github/zgraund/createreautomated/block/node/OreNodeBlock.class)",
+      "Bash(xargs grep -l \"copper_node\\\\|OreNodeBlock\")",
+      "Bash(xargs grep -l \"ore_node\\\\|copperNode\\\\|register\")",
+      "Bash(javap -p -c com/github/zgraund/createreautomated/registry/ModBlocks.class)",
+      "Bash(./gradlew compileJava --quiet)",
+      "Bash(dir /s /b \"riprendiamo-il-plan-allora-voglio-aggiun-expressive-parnas.md\")",
+      "Bash(Get-ChildItem -Path . -Recurse -Filter \"riprendiamo-il-plan-allora-voglio-aggiun-expressive-parnas.md\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(./gradlew compileJava --no-daemon)",
+      "Bash(gh release *)",
+      "PowerShell(gh *)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh issue *)",
+      "Bash(findstr /I /C:\"Claude\" /C:\"Co-Authored-By\" /C:\"anthropic\")",
+      "Read(//c/Users/TYP/.claude/**)",
+      "Bash(./gradlew.bat compileJava --console=plain)",
+      "Bash(./gradlew.bat build *)",
+      "Bash(./gradlew.bat compileJava -Xlint:deprecation --console=plain)",
+      "Bash(./gradlew.bat compileJava --rerun-tasks -Pcompiler.args=-Xlint:deprecation --console=plain)",
+      "Bash(python3 *)"
+    ]
+  }
+}

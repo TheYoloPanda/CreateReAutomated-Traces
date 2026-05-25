@@ -44,8 +44,9 @@ public class TraceForNodesFeature extends Feature<NoneFeatureConfiguration> {
 
         boolean placedAny = false;
         for (NodeMatch m : matches) {
-            TraceStructurePlacer.place(level, m.pos, m.block, m.id, ctx.random());
-            placedAny = true;
+            if (TraceStructurePlacer.place(level, m.pos, m.block, m.id, ctx.random())) {
+                placedAny = true;
+            }
         }
         return placedAny;
     }
