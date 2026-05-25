@@ -1,2 +1,9 @@
 {
+  "item.createreautomatedtraces.trace_finder": "Trace Finder",
+  "item.createreautomatedtraces.trace_finder.tooltip.count": "Tracking %s node type(s)",
+  "screen.createreautomatedtraces.trace_finder.title": "Trace Finder",
+  "screen.createreautomatedtraces.trace_finder.filter": "Search...",
+  "screen.createreautomatedtraces.trace_finder.track_all": "Track all",
+  "screen.createreautomatedtraces.trace_finder.clear": "Clear",
+  "screen.createreautomatedtraces.trace_finder.empty": "No node types available"
 }

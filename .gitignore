@@ -38,6 +38,3 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
-
-### CurseForge ###
-description.md

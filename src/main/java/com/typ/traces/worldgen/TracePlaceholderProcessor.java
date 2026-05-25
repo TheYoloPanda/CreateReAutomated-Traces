@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -55,8 +54,7 @@ public class TracePlaceholderProcessor extends StructureProcessor {
             return new StructureTemplate.StructureBlockInfo(
                     currentBlockInfo.pos(), traceBlock.defaultBlockState(), currentBlockInfo.nbt());
         }
-        if (currentBlockInfo.state().isAir()
-                && level.getFluidState(currentBlockInfo.pos()).is(FluidTags.WATER)) {
+        if (currentBlockInfo.state().isAir()) {
             return null;
         }
         return currentBlockInfo;

@@ -93,16 +93,15 @@ Add an Ores indicator where a Node has been generated
 [[dependencies.${mod_id}]]
     modId="createreautomated"
     type="required"
-    versionRange="[0.1.1,)"
+    versionRange="[0.2.0,)"
     ordering="AFTER"
     side="BOTH"
 
-# Create — optional. Required only if zinc_node / deepslate_zinc_node should
-# surface as create:zinc_ore. Without Create installed those nodes are skipped
-# silently, all other ore nodes still work.
+# Create — required by bundled recipes and default node trace mappings that
+# reference create:* items and zinc ores.
 [[dependencies.${mod_id}]]
     modId="create"
-    type="optional"
+    type="required"
     versionRange="[0,)"
     ordering="AFTER"
     side="BOTH"
