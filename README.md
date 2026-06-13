@@ -8,9 +8,9 @@ The mod also adds a Trace Finder item: a compass-like tool that can track nearby
 
 During chunk generation, at the `top_layer_modification` step, the mod scans the chunk for any block in the `createreautomated:ore_nodes` tag. Each Node found gets a small trace above it, picked from the bundled `.nbt` templates. On dry terrain the trace is placed on the surface; under water or lava it is placed on the solid bed below the fluid. Ice-covered water is treated as underwater terrain, including packed and blue ice over water, so traces go on the sea, lake, or river bed instead of on top of the ice. The host stone of the trace matches the Node's base rock, with cobblestone smoothed back to stone and cobbled deepslate to deepslate so the result reads as a natural outcrop instead of a pile of mining drops. The visible accent block on top is whatever you assign in the data map.
 
-If the terrain directly above the Node is unusable (cave entrance, cliff, terrain too uneven across the footprint), the mod searches outward up to 8 blocks for the nearest flat spot. If nothing in that radius works, the trace is skipped. Anchors that would overlap existing structures are rejected before placement, so a trace does not damage generated structure pieces. Foliage and snow around the trace are cleared with a small margin, with structure pieces left untouched. Logs are not cleared as foliage.
+If the terrain directly above the Node is awkward (cave entrance, cliff, terrain too uneven across the footprint), the mod searches outward for a better placement. The `tracePlacementRadius` common config controls how far the geometric center of the Trace template may move from the Node in X/Z: it defaults to 2 blocks, accepts values from 0 to 8, and setting it back to 8 restores the wider legacy placement range. A value of 0 keeps the 5x5 template center directly above the Node, even if the terrain looks less natural. Placement candidates use circular distance, so radius 1 allows the center above the Node or one block north, south, east, or west, but not diagonally. Placements that would overlap existing structures are rejected before placement, so a trace does not damage generated structure pieces. Foliage and snow around the trace are cleared with a small margin, with structure pieces left untouched. Logs are not cleared as foliage.
 
-New traces are recorded in a per-dimension SavedData index when they are placed. The index stores the actual visible trace block from the generated template, not a guessed center position. Existing chunks can be backfilled conservatively when they are loaded: the mod scans loaded old chunks for trace blocks near the surface or fluid bed and records them only when it can match the trace block to an Ore Node below or nearby. This helps old worlds, but it is intentionally conservative and may not recover every trace.
+New traces are recorded in a per-dimension SavedData index when they are placed. The index stores the actual visible trace block from the generated template, not a guessed center position. Some templates can put the highest visible ore accent away from the 5x5 center, so the placement radius is a center-of-template guarantee, not a guarantee that digging under the visible ore block always hits the Node. Existing chunks can be backfilled conservatively when they are loaded: the mod scans loaded old chunks for trace blocks near the surface or fluid bed and records them only when it can match the trace block to an Ore Node below or nearby. This helps old worlds, but it is intentionally conservative and may not recover every trace.
 
 ## Trace Finder
 
@@ -26,6 +26,16 @@ Every 10 server ticks, the server looks through the trace index around the playe
 - matching traces within the configured render radius show a beacon-style beam
 - entering an 8-block horizontal radius marks that trace discovered on every carried Trace Finder that tracks that Node type
 - discovered traces no longer produce beams and are ignored by the compass target for those Finders
+
+## Configuration
+
+The mod adds a Create-style in-game config screen backed by the common config file. The worldgen option `tracePlacementRadius` controls how far the center of a Trace template may move horizontally from its Node while looking for a natural nearby placement. The default is `2`, the minimum is `0`, and the maximum is `8`. This affects only newly generated chunks; existing Traces and saved Trace Finder discoveries are not moved. If an old local test config still contains the obsolete `traceSearchRadius` key and the screen looks stale, delete `run/config/createreautomatedtraces-common.toml` and let NeoForge/Catnip regenerate it.
+
+## External node-only integrations
+
+Mods that place real Create ReAutomated Ore Nodes as structure rewards can keep those blocks in `createreautomated:ore_nodes` without forcing this mod to generate a visible surface Trace above them. Call `TraceWorldgenExclusions.suppressGeneratedTrace(level, nodePos)` before placing the node during worldgen, then schedule `TraceApi.recordExternalNode(serverLevel, nodePos, nodeId)` on the main server thread. The Trace Finder will treat that indexed position as a valid node-only record when the chunk is loaded.
+
+This path is intended for integrations such as Roost Traces. It avoids reflection, mixins into the Trace Finder, or direct imports from internal packages like `com.typ.traces.index` and `com.typ.traces.worldgen`.
 
 ## Setup for modpack developers
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1]
+
+### Added
+- Added a Create-style common config screen with `tracePlacementRadius` for trace placement.
+- Added `TraceWorldgenExclusions`, a public runtime API for suppressing generated trace outcrops at exact node positions.
+- Added `TraceApi`, a public facade for external node-only integrations to record node positions in the Trace Finder index.
+
+### Changed
+- Trace placement now defaults to a 2-block horizontal radius from the Node to the Trace template center; setting `tracePlacementRadius` to 8 restores the previous wider placement range.
+- `tracePlacementRadius` now measures the real horizontal distance from the Node to the Trace template center. For example, radius 1 allows only the center block plus the four cardinal neighboring blocks, while diagonal placements are no longer counted as being within radius 1.
+- Trace Finder index resolution now supports records that point directly at compatible ore node blocks, and skips unloaded chunks without removing records.
+
 ## [0.2.0]
 
 ### Added
