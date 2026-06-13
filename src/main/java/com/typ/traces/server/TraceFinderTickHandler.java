@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
+import com.typ.traces.api.TraceApi;
 import com.typ.traces.component.TrackedNodesComponent;
 import com.typ.traces.index.TraceIndex;
 import com.typ.traces.item.TraceFinderItem;
@@ -30,6 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -107,11 +109,16 @@ public final class TraceFinderTickHandler {
             GlobalPos indexedGlobalPos = GlobalPos.of(level.dimension(), indexedPos);
             // Already discovered by some Finder in inventory → never beam, never target.
             if (discoveredUnion.contains(indexedGlobalPos)) return;
+            if (!level.hasChunk(indexedPos.getX() >> 4, indexedPos.getZ() >> 4)) return;
 
             Block nodeBlock = BuiltInRegistries.BLOCK.get(rec.nodeId());
             Block traceBlock = TraceBlockDataMap.traceBlockFor(nodeBlock).orElse(null);
-            Optional<BlockPos> resolvedPos = resolveTracePos(level, indexedPos, traceBlock);
-            if (traceBlock == null || resolvedPos.isEmpty()) {
+            if (traceBlock == null) {
+                staleTraces.add(indexedPos);
+                return;
+            }
+            Optional<BlockPos> resolvedPos = resolveTracePos(level, indexedPos, rec.nodeId(), traceBlock);
+            if (resolvedPos.isEmpty()) {
                 staleTraces.add(indexedPos);
                 return;
             }
@@ -190,9 +197,12 @@ public final class TraceFinderTickHandler {
         SNAPSHOTS.put(player.getUUID(), new PlayerSnapshot(newTarget, currentSet));
     }
 
-    private static Optional<BlockPos> resolveTracePos(ServerLevel level, BlockPos indexedPos, Block traceBlock) {
+    private static Optional<BlockPos> resolveTracePos(ServerLevel level, BlockPos indexedPos,
+                                                      ResourceLocation nodeId, Block traceBlock) {
         if (traceBlock == null) return Optional.empty();
-        if (level.getBlockState(indexedPos).is(traceBlock)) return Optional.of(indexedPos);
+        BlockState indexedState = level.getBlockState(indexedPos);
+        if (indexedState.is(traceBlock)) return Optional.of(indexedPos);
+        if (isCompatibleIndexedNode(indexedState, nodeId, traceBlock)) return Optional.of(indexedPos);
 
         BlockPos.MutableBlockPos cur = new BlockPos.MutableBlockPos();
         BlockPos best = null;
@@ -217,6 +227,14 @@ public final class TraceFinderTickHandler {
             }
         }
         return Optional.ofNullable(best);
+    }
+
+    private static boolean isCompatibleIndexedNode(BlockState state, ResourceLocation nodeId, Block traceBlock) {
+        if (!TraceApi.isOreNode(state)) return false;
+        if (!BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(nodeId)) return false;
+        return TraceBlockDataMap.traceBlockFor(state.getBlock())
+                .map(mappedTraceBlock -> mappedTraceBlock == traceBlock)
+                .orElse(false);
     }
 
     private static void markDiscovered(List<ItemStack> finders, ResourceLocation nodeId, GlobalPos tracePos) {

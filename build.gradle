@@ -90,6 +90,9 @@ neoForge {
 
         // applies to all the run configs above
         configureEach {
+            // ByteBuddy-based dev tooling attaches at runtime on Java 21.
+            jvmArgument '-XX:+EnableDynamicAgentLoading'
+
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
@@ -132,6 +135,7 @@ dependencies {
     // Create — runtime dependency declared in mods.toml. These localRuntime
     // entries keep the dev client/server able to load Create items and zinc ores
     // referenced by recipes and data maps.
+    compileOnly "net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}"
     localRuntime("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
     localRuntime "net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}"
     localRuntime "dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}"
