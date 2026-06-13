@@ -1,9 +1,13 @@
 package com.typ.traces.worldgen;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.typ.traces.config.Config;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -18,8 +22,9 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 public final class SurfaceFinder {
 
+    private static final int DEFAULT_PLACEMENT_RADIUS = 2;
+    private static final int MAX_PLACEMENT_RADIUS = 8;
     private static final int MAX_FOOTPRINT_VARIANCE = 4;
-    static final int SEARCH_RADIUS = 8;
     private static final int DISTANCE_WEIGHT = 6;
     private static final int HEIGHT_VARIANCE_WEIGHT = 48;
     private static final int EXTRA_VARIANCE_WEIGHT = 180;
@@ -31,36 +36,62 @@ public final class SurfaceFinder {
     private static final int HARD_OBSTACLE_PENALTY = 120;
     private static final int NO_GROUND_PENALTY = 20000;
     private static final int STRUCTURE_OVERLAP_PENALTY = 1_000_000;
-    private static final int[][] SEARCH_OFFSETS;
-
-    static {
-        int side = SEARCH_RADIUS * 2 + 1;
-        int[][] offsets = new int[side * side][2];
-        int idx = 0;
-        for (int dx = -SEARCH_RADIUS; dx <= SEARCH_RADIUS; dx++) {
-            for (int dz = -SEARCH_RADIUS; dz <= SEARCH_RADIUS; dz++) {
-                offsets[idx][0] = dx;
-                offsets[idx][1] = dz;
-                idx++;
-            }
-        }
-        Arrays.sort(offsets, Comparator
-                .comparingInt((int[] o) -> o[0] * o[0] + o[1] * o[1])
-                .thenComparingDouble(o -> Math.atan2(o[1], o[0])));
-        SEARCH_OFFSETS = offsets;
-    }
+    private static final Map<Integer, int[][]> PLACEMENT_OFFSETS_BY_RADIUS = new ConcurrentHashMap<>();
 
     private SurfaceFinder() {}
 
+    public static int placementRadius() {
+        if (Config.common() == null) return DEFAULT_PLACEMENT_RADIUS;
+        int configured = Config.common().worldgen.tracePlacementRadius.get();
+        return Math.max(0, Math.min(MAX_PLACEMENT_RADIUS, configured));
+    }
+
+    private static int[][] placementOffsets(int radius) {
+        return PLACEMENT_OFFSETS_BY_RADIUS.computeIfAbsent(radius, SurfaceFinder::buildPlacementOffsets);
+    }
+
+    private static int[][] buildPlacementOffsets(int radius) {
+        List<int[]> offsets = new ArrayList<>();
+        int radiusSq = radius * radius;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                if (dx * dx + dz * dz > radiusSq) continue;
+                offsets.add(new int[] { dx, dz });
+            }
+        }
+        offsets.sort(Comparator
+                .comparingInt((int[] o) -> o[0] * o[0] + o[1] * o[1])
+                .thenComparingInt(SurfaceFinder::offsetTieBreak)
+                .thenComparingInt(o -> o[0])
+                .thenComparingInt(o -> o[1]));
+        return offsets.toArray(new int[0][]);
+    }
+
+    private static int offsetTieBreak(int[] offset) {
+        int dx = offset[0];
+        int dz = offset[1];
+        if (dx > 0 && dz == 0) return 0;
+        if (dx < 0 && dz == 0) return 1;
+        if (dx == 0 && dz > 0) return 2;
+        if (dx == 0 && dz < 0) return 3;
+        if (dx > 0 && dz > 0) return 4;
+        if (dx > 0 && dz < 0) return 5;
+        if (dx < 0 && dz > 0) return 6;
+        if (dx < 0 && dz < 0) return 7;
+        return 8;
+    }
+
     public static Optional<BlockPos> findAnchor(WorldGenLevel level, BlockPos nodePos, Vec3i footprint, List<BoundingBox> structureBoxes) {
-        int originX = nodePos.getX() - Math.floorDiv(footprint.getX(), 2);
-        int originZ = nodePos.getZ() - Math.floorDiv(footprint.getZ(), 2);
         boolean nether = level.getLevel().dimension().equals(Level.NETHER);
         AnchorCandidate best = null;
+        int halfX = Math.floorDiv(footprint.getX(), 2);
+        int halfZ = Math.floorDiv(footprint.getZ(), 2);
 
-        for (int[] off : SEARCH_OFFSETS) {
-            int ox = originX + off[0];
-            int oz = originZ + off[1];
+        for (int[] off : placementOffsets(placementRadius())) {
+            int centerX = nodePos.getX() + off[0];
+            int centerZ = nodePos.getZ() + off[1];
+            int ox = centerX - halfX;
+            int oz = centerZ - halfZ;
             Optional<AnchorCandidate> result = nether
                     ? scoreNetherAnchor(level, ox, oz, footprint, nodePos.getY(), off, structureBoxes)
                     : scoreOverworldAnchor(level, ox, oz, footprint, off, structureBoxes);
