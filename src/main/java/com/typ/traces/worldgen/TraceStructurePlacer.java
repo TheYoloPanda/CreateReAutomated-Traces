@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.github.zgraund.createreautomated.block.node.OreNodeBlock;
 import com.typ.traces.CreateReAutomatedTraces;
+import com.typ.traces.api.TraceWorldgenExclusions;
 import com.typ.traces.index.TraceIndex;
 
 import net.minecraft.core.BlockPos;
@@ -42,6 +43,10 @@ public final class TraceStructurePlacer {
     }
 
     public static boolean place(WorldGenLevel level, BlockPos nodePos, Block nodeBlock, ResourceLocation nodeId, RandomSource rng) {
+        if (TraceWorldgenExclusions.isGeneratedTraceSuppressed(level, nodePos)) {
+            return false;
+        }
+
         Optional<Block> traceBlockOpt = TraceBlockDataMap.traceBlockFor(nodeBlock);
         if (traceBlockOpt.isEmpty()) {
             TraceBlockDataMap.warnMissingOnce(nodeId);
@@ -91,7 +96,7 @@ public final class TraceStructurePlacer {
     }
 
     private static List<BoundingBox> collectStructureBoxes(WorldGenLevel level, BlockPos nodePos, Vec3i size) {
-        int reach = SurfaceFinder.SEARCH_RADIUS + Math.max(size.getX(), size.getZ()) + CLEAR_MARGIN;
+        int reach = SurfaceFinder.placementRadius() + Math.max(size.getX(), size.getZ()) + CLEAR_MARGIN;
         int minCX = (nodePos.getX() - reach) >> 4;
         int maxCX = (nodePos.getX() + reach) >> 4;
         int minCZ = (nodePos.getZ() - reach) >> 4;

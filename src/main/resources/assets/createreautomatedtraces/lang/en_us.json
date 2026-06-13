@@ -1,4 +1,9 @@
 {
+  "createreautomatedtraces.configuration.section.createreautomatedtraces.common.toml": "Common Configurations",
+  "createreautomatedtraces.configuration.section.createreautomatedtraces.common.toml.title": "Create ReAutomated: Traces Common Configurations",
+  "createreautomatedtraces.configuration.title": "Create ReAutomated: Traces Configurations",
+  "createreautomatedtraces.configuration.tracePlacementRadius": "Trace Placement Radius",
+  "createreautomatedtraces.configuration.worldgen": "Trace Generation",
   "item.createreautomatedtraces.trace_finder": "Trace Finder",
   "item.createreautomatedtraces.trace_finder.tooltip.count": "Tracking %s node type(s)",
   "screen.createreautomatedtraces.trace_finder.title": "Trace Finder",

@@ -3,6 +3,8 @@ package com.typ.traces;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
+import com.typ.traces.api.TraceWorldgenExclusions;
+import com.typ.traces.config.Config;
 import com.typ.traces.index.TraceIndexBackfill;
 import com.typ.traces.network.ModPayloads;
 import com.typ.traces.registry.ModDataComponents;
@@ -31,22 +33,26 @@ public class CreateReAutomatedTraces {
         modEventBus.addListener(TraceBlockDataMap::register);
         modEventBus.addListener(ModItems::addCreativeTabContents);
         modEventBus.addListener(ModPayloads::register);
+        modEventBus.addListener(Config::onLoad);
+        modEventBus.addListener(Config::onReload);
+        Config.register(modContainer);
         ModDataComponents.register(modEventBus);
         ModItems.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(TraceTemplates::onAddReloadListener);
         NeoForge.EVENT_BUS.addListener(TraceIndexBackfill::onChunkLoad);
         NeoForge.EVENT_BUS.addListener(TraceIndexBackfill::onServerTick);
         NeoForge.EVENT_BUS.addListener(TraceIndexBackfill::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(TraceWorldgenExclusions::onServerStopping);
         NeoForge.EVENT_BUS.addListener(TraceFinderTickHandler::onServerTick);
         NeoForge.EVENT_BUS.addListener(TraceFinderTickHandler::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(TraceFinderTickHandler::onPlayerChangedDimension);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            initClient(modEventBus);
+            initClient(modEventBus, modContainer);
         }
     }
 
-    private void initClient(IEventBus modEventBus) {
-        com.typ.traces.client.ClientModEvents.register(modEventBus);
+    private void initClient(IEventBus modEventBus, ModContainer modContainer) {
+        com.typ.traces.client.ClientModEvents.register(modEventBus, modContainer);
     }
 }
