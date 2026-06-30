@@ -3,7 +3,7 @@ package com.typ.traces.client.gui;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class TraceFinderScreen extends Screen {
 
     private final InteractionHand hand;
     private final List<NodeOption> allNodes;
-    private final Set<ResourceLocation> selected = new HashSet<>();
+    private final Set<ResourceLocation> selected = new LinkedHashSet<>();
 
     private List<NodeOption> filtered;
     private EditBox filterBox;
@@ -68,17 +68,17 @@ public class TraceFinderScreen extends Screen {
         super(Component.translatable("screen.createreautomatedtraces.trace_finder.title"));
         this.hand = hand;
 
-        Set<ResourceLocation> initiallySelected = new HashSet<>();
+        Set<ResourceLocation> initiallySelected = new LinkedHashSet<>();
         Player p = Minecraft.getInstance().player;
         if (p != null) {
             ItemStack stack = p.getItemInHand(hand);
             TrackedNodesComponent comp = stack.get(ModDataComponents.TRACKED_NODES.get());
             if (comp != null) initiallySelected.addAll(comp.selected());
         }
-        selected.addAll(initiallySelected);
+        for (ResourceLocation id : initiallySelected) addSelectionIfRoom(id);
 
         // Show data map keys + any already-selected ids no longer in the map (so they can be unselected).
-        Set<ResourceLocation> all = new HashSet<>(collectNodeIds());
+        Set<ResourceLocation> all = new LinkedHashSet<>(collectNodeIds());
         all.addAll(initiallySelected);
         List<NodeOption> sorted = new ArrayList<>();
         for (ResourceLocation id : all) {
@@ -102,19 +102,28 @@ public class TraceFinderScreen extends Screen {
         addRenderableWidget(this.filterBox);
 
         int buttonsY = this.height - 28;
-        int buttonW = (PANEL_WIDTH - 12) / 2;
+        int buttonGap = 4;
+        int buttonW = (PANEL_WIDTH - 8 - buttonGap * 2) / 3;
+        int buttonsX = panelX + (PANEL_WIDTH - (buttonW * 3 + buttonGap * 2)) / 2;
         addRenderableWidget(Button.builder(
                         Component.translatable("screen.createreautomatedtraces.trace_finder.track_all"),
                         btn -> {
                             selected.clear();
-                            for (NodeOption option : allNodes) selected.add(option.id());
+                            for (NodeOption option : allNodes) {
+                                if (!addSelectionIfRoom(option.id())) break;
+                            }
                         })
-                .bounds(panelX + 4, buttonsY, buttonW, 20)
+                .bounds(buttonsX, buttonsY, buttonW, 20)
                 .build());
         addRenderableWidget(Button.builder(
                         Component.translatable("screen.createreautomatedtraces.trace_finder.clear"),
                         btn -> selected.clear())
-                .bounds(panelX + 8 + buttonW, buttonsY, buttonW, 20)
+                .bounds(buttonsX + buttonW + buttonGap, buttonsY, buttonW, 20)
+                .build());
+        addRenderableWidget(Button.builder(
+                        Component.translatable("screen.createreautomatedtraces.trace_finder.close"),
+                        btn -> TraceFinderScreen.this.onClose())
+                .bounds(buttonsX + (buttonW + buttonGap) * 2, buttonsY, buttonW, 20)
                 .build());
     }
 
@@ -206,8 +215,9 @@ public class TraceFinderScreen extends Screen {
                 int idx = row + scrollOffset;
                 if (idx >= 0 && idx < filtered.size()) {
                     ResourceLocation id = filtered.get(idx).id();
-                    if (!selected.add(id)) selected.remove(id);
-                    playClickSound();
+                    if (selected.remove(id) || addSelectionIfRoom(id)) {
+                        playClickSound();
+                    }
                     return true;
                 }
             }
@@ -235,7 +245,7 @@ public class TraceFinderScreen extends Screen {
 
     @Override
     public void onClose() {
-        PacketDistributor.sendToServer(new SelectionUpdatePayload(hand, new HashSet<>(selected)));
+        PacketDistributor.sendToServer(new SelectionUpdatePayload(hand, new LinkedHashSet<>(selected)));
         super.onClose();
     }
 
@@ -253,5 +263,11 @@ public class TraceFinderScreen extends Screen {
         }
         ids.sort(Comparator.comparing(ResourceLocation::toString));
         return Collections.unmodifiableList(ids);
+    }
+
+    private boolean addSelectionIfRoom(ResourceLocation id) {
+        if (selected.contains(id)) return true;
+        if (selected.size() >= SelectionUpdatePayload.MAX_SELECTED_NODES) return false;
+        return selected.add(id);
     }
 }

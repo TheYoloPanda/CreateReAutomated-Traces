@@ -20,14 +20,6 @@ public final class TraceIndex {
         return TraceIndexSavedData.get(level).remove(pos);
     }
 
-    public static boolean isScanned(ServerLevel level, long chunkLong) {
-        return TraceIndexSavedData.get(level).isScanned(chunkLong);
-    }
-
-    public static boolean markScanned(ServerLevel level, long chunkLong) {
-        return TraceIndexSavedData.get(level).markScanned(chunkLong);
-    }
-
     public static boolean isRecorded(ServerLevel level, BlockPos pos) {
         return TraceIndexSavedData.get(level).isRecorded(pos);
     }

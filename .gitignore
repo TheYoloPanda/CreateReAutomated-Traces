@@ -38,5 +38,7 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
-/DECRIPTION.md
 /MOD_ARCHITECTURE.md
+/docs/
+/DESCRIPTION.md
+/src/test/
