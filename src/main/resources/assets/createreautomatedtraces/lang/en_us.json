@@ -1,14 +1,21 @@
 {
   "createreautomatedtraces.configuration.section.createreautomatedtraces.common.toml": "Common Configurations",
   "createreautomatedtraces.configuration.section.createreautomatedtraces.common.toml.title": "Create ReAutomated: Traces Common Configurations",
+  "createreautomatedtraces.configuration.finder": "Trace Finder",
+  "createreautomatedtraces.configuration.maxVisibleTraceBeams": "Max Visible Trace Beams",
   "createreautomatedtraces.configuration.title": "Create ReAutomated: Traces Configurations",
+  "createreautomatedtraces.configuration.tracePlacementDiagnostics": "Trace Placement Diagnostics",
   "createreautomatedtraces.configuration.tracePlacementRadius": "Trace Placement Radius",
+  "createreautomatedtraces.configuration.traceFinderRenderRadiusChunks": "Trace Finder Render Radius",
   "createreautomatedtraces.configuration.worldgen": "Trace Generation",
+  "createreautomatedtraces.diagnostics.trace_skipped": "[Traces] Skipped %s in %s at x=%s z=%s. Reasons: %s",
+  "createreautomatedtraces.diagnostics.trace_skipped.hover": "Click to suggest %s",
   "item.createreautomatedtraces.trace_finder": "Trace Finder",
   "item.createreautomatedtraces.trace_finder.tooltip.count": "Tracking %s node type(s)",
   "screen.createreautomatedtraces.trace_finder.title": "Trace Finder",
   "screen.createreautomatedtraces.trace_finder.filter": "Search...",
-  "screen.createreautomatedtraces.trace_finder.track_all": "Track all",
+  "screen.createreautomatedtraces.trace_finder.track_all": "Track All",
   "screen.createreautomatedtraces.trace_finder.clear": "Clear",
+  "screen.createreautomatedtraces.trace_finder.close": "Close",
   "screen.createreautomatedtraces.trace_finder.empty": "No node types available"
 }

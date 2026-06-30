@@ -1,6 +1,6 @@
 package com.typ.traces.network;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.typ.traces.CreateReAutomatedTraces;
@@ -21,8 +21,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModPayloads {
-
-    private static final int MAX_SELECTED_NODES = 512;
 
     private ModPayloads() {}
 
@@ -73,9 +71,9 @@ public final class ModPayloads {
     }
 
     private static Set<ResourceLocation> validSelections(Set<ResourceLocation> requested) {
-        Set<ResourceLocation> valid = new HashSet<>();
+        Set<ResourceLocation> valid = new LinkedHashSet<>();
         for (ResourceLocation id : requested) {
-            if (valid.size() >= MAX_SELECTED_NODES) break;
+            if (valid.size() >= SelectionUpdatePayload.MAX_SELECTED_NODES) break;
             Block block = BuiltInRegistries.BLOCK.get(id);
             if (block.builtInRegistryHolder().getData(TraceBlockDataMap.TYPE) == null) continue;
             valid.add(id);

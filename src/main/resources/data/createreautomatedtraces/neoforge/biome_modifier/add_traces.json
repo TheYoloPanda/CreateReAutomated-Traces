@@ -2,5 +2,5 @@
   "type": "neoforge:add_features",
   "biomes": "#createreautomatedtraces:has_traces",
   "features": "createreautomatedtraces:trace_for_nodes",
-  "step": "top_layer_modification"
+  "step": "fluid_springs"
 }

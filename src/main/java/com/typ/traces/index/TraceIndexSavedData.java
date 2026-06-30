@@ -21,7 +21,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 public class TraceIndexSavedData extends SavedData {
 
     public static final String DATA_NAME = "createreautomatedtraces_trace_index";
-    private static final int SCAN_VERSION = 2;
 
     public record TraceRecord(ResourceLocation nodeId, long posLong) {
         public BlockPos pos() { return BlockPos.of(posLong); }
@@ -29,7 +28,6 @@ public class TraceIndexSavedData extends SavedData {
 
     private final Long2ObjectOpenHashMap<TraceRecord> byPos = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectOpenHashMap<LongOpenHashSet> chunkIndex = new Long2ObjectOpenHashMap<>();
-    private final LongOpenHashSet scannedChunks = new LongOpenHashSet();
 
     public TraceIndexSavedData() {}
 
@@ -57,16 +55,6 @@ public class TraceIndexSavedData extends SavedData {
         removeFromChunkIndex(pos.getX() >> 4, pos.getZ() >> 4, pk);
         setDirty();
         return true;
-    }
-
-    public boolean markScanned(long chunkLong) {
-        boolean added = scannedChunks.add(chunkLong);
-        if (added) setDirty();
-        return added;
-    }
-
-    public boolean isScanned(long chunkLong) {
-        return scannedChunks.contains(chunkLong);
     }
 
     public boolean isRecorded(BlockPos pos) {
@@ -129,8 +117,6 @@ public class TraceIndexSavedData extends SavedData {
             entries.add(t);
         }
         tag.put("entries", entries);
-        tag.putInt("scan_version", SCAN_VERSION);
-        tag.putLongArray("scanned", scannedChunks.toLongArray());
         return tag;
     }
 
@@ -145,10 +131,6 @@ public class TraceIndexSavedData extends SavedData {
             BlockPos p = BlockPos.of(posLong);
             data.byPos.put(posLong, new TraceRecord(nodeId, posLong));
             data.addToChunkIndex(p.getX() >> 4, p.getZ() >> 4, posLong);
-        }
-        if (tag.getInt("scan_version") >= SCAN_VERSION) {
-            long[] scanned = tag.getLongArray("scanned");
-            for (long ck : scanned) data.scannedChunks.add(ck);
         }
         return data;
     }

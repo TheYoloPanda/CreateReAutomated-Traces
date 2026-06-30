@@ -1,6 +1,8 @@
 package com.typ.traces.network;
 
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.typ.traces.CreateReAutomatedTraces;
@@ -14,17 +16,24 @@ import net.minecraft.world.InteractionHand;
 
 public record SelectionUpdatePayload(InteractionHand hand, Set<ResourceLocation> selected) implements CustomPacketPayload {
 
+    public static final int MAX_SELECTED_NODES = 512;
+
     public static final Type<SelectionUpdatePayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(CreateReAutomatedTraces.MODID, "selection_update"));
 
     public static final StreamCodec<ByteBuf, SelectionUpdatePayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,
             (SelectionUpdatePayload p) -> p.hand() == InteractionHand.MAIN_HAND,
-            ResourceLocation.STREAM_CODEC.<HashSet<ResourceLocation>>apply(ByteBufCodecs.collection(HashSet::new)),
-            (SelectionUpdatePayload p) -> new HashSet<>(p.selected()),
-            (Boolean main, HashSet<ResourceLocation> set) ->
+            ByteBufCodecs.collection(LinkedHashSet::new, ResourceLocation.STREAM_CODEC, MAX_SELECTED_NODES),
+            (SelectionUpdatePayload p) -> new LinkedHashSet<>(p.selected()),
+            (Boolean main, LinkedHashSet<ResourceLocation> set) ->
                     new SelectionUpdatePayload(main ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, set)
     );
+
+    public SelectionUpdatePayload {
+        hand = Objects.requireNonNull(hand, "hand");
+        selected = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(selected, "selected")));
+    }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
